@@ -2,7 +2,12 @@ package xyz.imaf6971.volgaitfinal.service.impl;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import xyz.imaf6971.volgaitfinal.dto.RegistrationDto;
@@ -11,8 +16,11 @@ import xyz.imaf6971.volgaitfinal.repository.UserRepository;
 import xyz.imaf6971.volgaitfinal.service.RoleService;
 import xyz.imaf6971.volgaitfinal.service.UserService;
 
+import java.util.Collection;
+import java.util.Collections;
+
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
 
@@ -47,4 +55,26 @@ public class UserServiceImpl implements UserService {
         var auth = authenticationManager.authenticate(authToken);
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        var user = getByUsername(username);
+        return toUserDetails(user);
+    }
+
+    private UserDetails toUserDetails(User user) {
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(), user.getPassword(), rolesToAuthorities(user));
+    }
+
+    private Collection<? extends GrantedAuthority> rolesToAuthorities(User user) {
+        var authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().getTitle());
+        return Collections.singletonList(authority);
+    }
+
+    private User getByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + " not found"));
+    }
+
 }
