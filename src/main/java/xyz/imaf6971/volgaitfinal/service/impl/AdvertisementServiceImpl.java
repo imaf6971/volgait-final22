@@ -4,8 +4,10 @@ import org.springframework.stereotype.Service;
 import xyz.imaf6971.volgaitfinal.dto.AdvertisementDto;
 import xyz.imaf6971.volgaitfinal.exception.AdvertisementNotFoundException;
 import xyz.imaf6971.volgaitfinal.model.Advertisement;
+import xyz.imaf6971.volgaitfinal.model.User;
 import xyz.imaf6971.volgaitfinal.repository.AdvertisementRepository;
 import xyz.imaf6971.volgaitfinal.service.AdvertisementService;
+import xyz.imaf6971.volgaitfinal.service.UserService;
 
 import java.util.List;
 
@@ -13,9 +15,11 @@ import java.util.List;
 public class AdvertisementServiceImpl implements AdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
+    private final UserService userService;
 
-    public AdvertisementServiceImpl(AdvertisementRepository advertisementRepository) {
+    public AdvertisementServiceImpl(AdvertisementRepository advertisementRepository, UserService userService) {
         this.advertisementRepository = advertisementRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -50,11 +54,27 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     @Override
     public void deleteAdvertisementById(Long advertisementId) {
-        advertisementRepository.deleteById(advertisementId);
+        var currentUser = userService.getCurrentUser();
+        deleteAdvertisementIfAdmin(currentUser, advertisementId);
+        deleteAdvertisementIfAuthor(currentUser, advertisementId);
+    }
+
+    private void deleteAdvertisementIfAdmin(User currentUser, Long advertisementId) {
+        if (currentUser.isAdmin()) {
+            advertisementRepository.deleteById(advertisementId);
+        }
+    }
+
+    private void deleteAdvertisementIfAuthor(User currentUser, Long advertisementId) {
+        var advertisement = getById(advertisementId);
+        if (currentUser.isAuthorOf(advertisement)) {
+            advertisementRepository.deleteById(advertisementId);
+        }
     }
 
     @Override
     public void changeAdvertisement(Long advertisementId, AdvertisementDto advertisementDto) {
 
     }
+
 }
