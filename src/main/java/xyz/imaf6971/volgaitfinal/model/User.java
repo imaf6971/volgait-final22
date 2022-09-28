@@ -1,6 +1,9 @@
 package xyz.imaf6971.volgaitfinal.model;
 
 import javax.persistence.*;
+import java.util.Set;
+
+import static xyz.imaf6971.volgaitfinal.model.Roles.ADMIN;
 
 @Entity
 @Table(name = "users")
@@ -15,6 +18,9 @@ public class User extends AbstractEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
+
+    @OneToMany(mappedBy = "author")
+    private Set<Advertisement> advertisements;
 
     public Role getRole() {
         return role;
@@ -39,4 +45,13 @@ public class User extends AbstractEntity {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public boolean isAdmin() {
+        return role.getTitle().equals(ADMIN.value);
+    }
+
+    public boolean isAuthorOf(Advertisement advertisement) {
+        return advertisements.contains(advertisement);
+    }
+
 }

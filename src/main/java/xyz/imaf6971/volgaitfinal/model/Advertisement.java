@@ -1,8 +1,6 @@
 package xyz.imaf6971.volgaitfinal.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "advertisements")
@@ -13,6 +11,10 @@ public class Advertisement extends AbstractEntity {
 
     @Column(name = "text", nullable = false)
     private String text;
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "author_id", nullable = false)
+    private User author;
 
     public String getTitle() {
         return title;
@@ -28,5 +30,13 @@ public class Advertisement extends AbstractEntity {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 }
