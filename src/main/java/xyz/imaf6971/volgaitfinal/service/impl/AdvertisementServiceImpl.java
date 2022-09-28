@@ -3,8 +3,8 @@ package xyz.imaf6971.volgaitfinal.service.impl;
 import org.springframework.stereotype.Service;
 import xyz.imaf6971.volgaitfinal.dto.AdvertisementDto;
 import xyz.imaf6971.volgaitfinal.exception.AdvertisementNotFoundException;
+import xyz.imaf6971.volgaitfinal.exception.PermissionDeniedException;
 import xyz.imaf6971.volgaitfinal.model.Advertisement;
-import xyz.imaf6971.volgaitfinal.model.User;
 import xyz.imaf6971.volgaitfinal.repository.AdvertisementRepository;
 import xyz.imaf6971.volgaitfinal.service.AdvertisementService;
 import xyz.imaf6971.volgaitfinal.service.UserService;
@@ -56,21 +56,17 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     @Override
     public void deleteAdvertisementById(Long advertisementId) {
         var currentUser = userService.getCurrentUser();
-        deleteAdvertisementIfAdmin(currentUser, advertisementId);
-        deleteAdvertisementIfAuthor(currentUser, advertisementId);
-    }
-
-    private void deleteAdvertisementIfAdmin(User currentUser, Long advertisementId) {
         if (currentUser.isAdmin()) {
             advertisementRepository.deleteById(advertisementId);
+            return;
         }
-    }
 
-    private void deleteAdvertisementIfAuthor(User currentUser, Long advertisementId) {
         var advertisement = getById(advertisementId);
         if (currentUser.isAuthorOf(advertisement)) {
             advertisementRepository.deleteById(advertisementId);
+            return;
         }
+        throw new PermissionDeniedException("Cannot delete advertisement with id " + advertisementId);
     }
 
     @Override
