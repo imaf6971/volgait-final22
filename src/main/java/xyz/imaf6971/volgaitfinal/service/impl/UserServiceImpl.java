@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import xyz.imaf6971.volgaitfinal.dto.RegistrationDto;
 import xyz.imaf6971.volgaitfinal.model.User;
 import xyz.imaf6971.volgaitfinal.repository.UserRepository;
+import xyz.imaf6971.volgaitfinal.service.RoleService;
 import xyz.imaf6971.volgaitfinal.service.UserService;
 
 @Service
@@ -19,15 +20,19 @@ public class UserServiceImpl implements UserService {
 
     private final AuthenticationManager authenticationManager;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+    private final RoleService roleService;
+
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RoleService roleService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.roleService = roleService;
     }
 
     @Override
     public void register(RegistrationDto registrationDto) {
         var user = new User();
+        user.setRole(roleService.getDefaultRole());
         user.setUsername(registrationDto.username());
         user.setPassword(passwordEncoder.encode(registrationDto.password()));
         userRepository.save(user);
