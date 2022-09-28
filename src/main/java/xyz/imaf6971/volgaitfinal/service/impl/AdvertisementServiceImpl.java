@@ -49,6 +49,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         var advertisement = new Advertisement();
         advertisement.setText(advertisementDto.text());
         advertisement.setTitle(advertisementDto.title());
+        advertisement.setAuthor(userService.getCurrentUser());
         advertisementRepository.save(advertisement);
     }
 
