@@ -1,9 +1,6 @@
 package xyz.imaf6971.volgaitfinal.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
@@ -16,7 +13,7 @@ public class User extends AbstractEntity {
     private String password;
 
     @ManyToOne(optional = false)
-    @Column(name = "role_id", nullable = false)
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
     public Role getRole() {
