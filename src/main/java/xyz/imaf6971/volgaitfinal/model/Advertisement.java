@@ -17,7 +17,7 @@ public class Advertisement extends AbstractEntity {
     private User author;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "type_id", nullable = false)
     private AdvertisementType type;
 
     public String getTitle() {
