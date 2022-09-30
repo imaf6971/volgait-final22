@@ -32,7 +32,8 @@ public class AdvertisementController {
     }
 
     @PutMapping("/{advertisementId}")
-    public void changeAdvertisementById(@PathVariable Long advertisementId, @RequestBody AdvertisementDto advertisementDto) {
+    public void changeAdvertisementById(@PathVariable Long advertisementId,
+                                        @RequestBody AdvertisementDto advertisementDto) {
         advertisementService.changeAdvertisement(advertisementId, advertisementDto);
     }
 
