@@ -7,6 +7,7 @@ import xyz.imaf6971.volgaitfinal.exception.PermissionDeniedException;
 import xyz.imaf6971.volgaitfinal.model.Advertisement;
 import xyz.imaf6971.volgaitfinal.repository.AdvertisementRepository;
 import xyz.imaf6971.volgaitfinal.service.AdvertisementService;
+import xyz.imaf6971.volgaitfinal.service.AdvertisementTypeService;
 import xyz.imaf6971.volgaitfinal.service.UserService;
 
 import java.util.List;
@@ -16,10 +17,15 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
     private final UserService userService;
+    private final AdvertisementTypeService typeService;
 
-    public AdvertisementServiceImpl(AdvertisementRepository advertisementRepository, UserService userService) {
+    public AdvertisementServiceImpl(
+            AdvertisementRepository advertisementRepository,
+            UserService userService,
+            AdvertisementTypeService typeService) {
         this.advertisementRepository = advertisementRepository;
         this.userService = userService;
+        this.typeService = typeService;
     }
 
     @Override
@@ -31,7 +37,12 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     private AdvertisementDto toDto(Advertisement advertisement) {
-        return new AdvertisementDto(advertisement.getId(), advertisement.getTitle(), advertisement.getText());
+        return new AdvertisementDto(
+                advertisement.getId(),
+                advertisement.getTitle(),
+                advertisement.getText(),
+                advertisement.getType().getId()
+        );
     }
 
     @Override
@@ -50,6 +61,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         advertisement.setText(advertisementDto.text());
         advertisement.setTitle(advertisementDto.title());
         advertisement.setAuthor(userService.getCurrentUser());
+        advertisement.setType(typeService.getTypeById(advertisementDto.typeId()));
         advertisementRepository.save(advertisement);
     }
 
