@@ -7,7 +7,7 @@ import xyz.imaf6971.volgaitfinal.service.AdvertisementService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/advertisement")
+@RequestMapping("/api/v1/advertisements")
 public class AdvertisementController {
 
     private final AdvertisementService advertisementService;
