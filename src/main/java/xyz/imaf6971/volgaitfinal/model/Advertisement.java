@@ -16,6 +16,10 @@ public class Advertisement extends AbstractEntity {
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "author_id", nullable = false)
+    private AdvertisementType type;
+
     public String getTitle() {
         return title;
     }
@@ -38,5 +42,13 @@ public class Advertisement extends AbstractEntity {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public AdvertisementType getType() {
+        return type;
+    }
+
+    public void setType(AdvertisementType type) {
+        this.type = type;
     }
 }
