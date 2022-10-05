@@ -33,4 +33,16 @@ public class UserServiceImpl implements UserService {
         repository.save(user);
     }
 
+    @Override
+    public void changeUsername(String username, String newUsername) {
+        var user = getByUsername(username);
+        user.setUsername(newUsername);
+        saveUser(user);
+    }
+
+    @Override
+    public void deleteUser(String username) {
+        repository.deleteByUsername(username);
+    }
+
 }

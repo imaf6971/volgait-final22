@@ -10,4 +10,7 @@ public interface UserService {
 
     void saveUser(User user);
 
+    void changeUsername(String username, String newUsername);
+
+    void deleteUser(String username);
 }
