@@ -35,14 +35,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changeUsername(String username, String newUsername) {
-        var user = getByUsername(username);
-        user.setUsername(newUsername);
-        saveUser(user);
+        var currentUser = getCurrentUser();
+        var userToChange = getByUsername(username);
+        if (currentUser.canChangeUsernameOf(userToChange)) {
+            userToChange.setUsername(newUsername);
+            saveUser(userToChange);
+        }
     }
 
     @Override
     public void deleteUser(String username) {
-        repository.deleteByUsername(username);
+        if (getCurrentUser().isAdmin()) {
+            repository.deleteByUsername(username);
+        }
     }
 
 }

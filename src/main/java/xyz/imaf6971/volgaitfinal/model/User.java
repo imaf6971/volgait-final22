@@ -54,4 +54,10 @@ public class User extends AbstractEntity {
         return advertisements.contains(advertisement);
     }
 
+    public boolean canChangeUsernameOf(User anotherUser) {
+        if (isAdmin()) {
+            return true;
+        }
+        return username.equals(anotherUser.username);
+    }
 }
