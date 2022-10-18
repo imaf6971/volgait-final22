@@ -39,6 +39,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setRole(roleService.getDefaultRole());
         user.setUsername(registrationDto.username());
         user.setPassword(passwordEncoder.encode(registrationDto.password()));
+        user.setCanPublish(true);
         userService.saveUser(user);
     }
 

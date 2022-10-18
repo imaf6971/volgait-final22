@@ -51,4 +51,15 @@ public class UserServiceImpl implements UserService {
         repository.deleteByUsername(username);
     }
 
+    public void restrictAdvertisementPublishing(String username) {
+        var currentUser = getCurrentUser();
+        if (currentUser.isAdmin() || currentUser.isModerator()) {
+            var user = getByUsername(username);
+            user.setCanPublish(false);
+            saveUser(user);
+            return;
+        }
+        throw new PermissionDeniedException("Only admins and moderators can restrict publishing");
+    }
+
 }

@@ -23,6 +23,9 @@ public class User extends AbstractEntity {
     @OneToMany(mappedBy = "author")
     private Set<Advertisement> advertisements;
 
+    @Column(name = "can_publish", nullable = false)
+    private boolean canPublish;
+
     public Role getRole() {
         return role;
     }
@@ -57,5 +60,13 @@ public class User extends AbstractEntity {
 
     public boolean isModerator() {
         return role.getTitle().equals(MODERATOR.value);
+    }
+
+    public void setCanPublish(boolean canPublish) {
+        this.canPublish = canPublish;
+    }
+
+    public boolean isCanPublish() {
+        return canPublish;
     }
 }

@@ -57,12 +57,17 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     @Override
     public void createAdvertisement(AdvertisementDto advertisementDto) {
-        var advertisement = new Advertisement();
-        advertisement.setText(advertisementDto.text());
-        advertisement.setTitle(advertisementDto.title());
-        advertisement.setAuthor(userService.getCurrentUser());
-        advertisement.setType(typeService.getTypeById(advertisementDto.typeId()));
-        advertisementRepository.save(advertisement);
+        var currentUser = userService.getCurrentUser();
+        if (currentUser.isCanPublish()) {
+            var advertisement = new Advertisement();
+            advertisement.setText(advertisementDto.text());
+            advertisement.setTitle(advertisementDto.title());
+            advertisement.setAuthor(currentUser);
+            advertisement.setType(typeService.getTypeById(advertisementDto.typeId()));
+            advertisementRepository.save(advertisement);
+            return;
+        }
+        throw new PermissionDeniedException("You cant publish");
     }
 
     @Override
