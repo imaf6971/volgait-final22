@@ -48,7 +48,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(String username) {
-        repository.deleteByUsername(username);
+        if (getCurrentUser().isAdmin()) {
+            repository.deleteByUsername(username);
+        }
     }
 
     public void restrictAdvertisementPublishing(String username) {
