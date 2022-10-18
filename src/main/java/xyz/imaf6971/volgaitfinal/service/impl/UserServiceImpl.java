@@ -3,6 +3,7 @@ package xyz.imaf6971.volgaitfinal.service.impl;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import xyz.imaf6971.volgaitfinal.exception.PermissionDeniedException;
 import xyz.imaf6971.volgaitfinal.model.User;
 import xyz.imaf6971.volgaitfinal.repository.UserRepository;
 import xyz.imaf6971.volgaitfinal.service.UserService;
@@ -35,9 +36,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changeUsername(String username, String newUsername) {
-        var user = getByUsername(username);
-        user.setUsername(newUsername);
-        saveUser(user);
+        var currentUser = getCurrentUser();
+        if (currentUser.isAdmin() || currentUser.isModerator() || currentUser.getUsername().equals(username)) {
+            var user = getByUsername(username);
+            user.setUsername(newUsername);
+            saveUser(user);
+            return;
+        }
+        throw new PermissionDeniedException("You don't have rights to change this users name");
     }
 
     @Override

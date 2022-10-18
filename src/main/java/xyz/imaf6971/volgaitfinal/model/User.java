@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 import static xyz.imaf6971.volgaitfinal.model.Roles.ADMIN;
+import static xyz.imaf6971.volgaitfinal.model.Roles.MODERATOR;
 
 @Entity
 @Table(name = "users")
@@ -54,4 +55,7 @@ public class User extends AbstractEntity {
         return advertisements.contains(advertisement);
     }
 
+    public boolean isModerator() {
+        return role.getTitle().equals(MODERATOR.value);
+    }
 }
