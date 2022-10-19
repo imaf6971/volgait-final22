@@ -5,6 +5,7 @@ import xyz.imaf6971.volgaitfinal.dto.AdvertisementDto;
 import xyz.imaf6971.volgaitfinal.exception.AdvertisementNotFoundException;
 import xyz.imaf6971.volgaitfinal.exception.PermissionDeniedException;
 import xyz.imaf6971.volgaitfinal.model.Advertisement;
+import xyz.imaf6971.volgaitfinal.model.User;
 import xyz.imaf6971.volgaitfinal.repository.AdvertisementRepository;
 import xyz.imaf6971.volgaitfinal.service.AdvertisementService;
 import xyz.imaf6971.volgaitfinal.service.AdvertisementTypeService;
@@ -58,37 +59,34 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     @Override
     public void createAdvertisement(AdvertisementDto advertisementDto) {
         var currentUser = userService.getCurrentUser();
-        if (currentUser.isCanPublish()) {
-            var advertisement = new Advertisement();
-            advertisement.setText(advertisementDto.text());
-            advertisement.setTitle(advertisementDto.title());
-            advertisement.setAuthor(currentUser);
-            advertisement.setType(typeService.getTypeById(advertisementDto.typeId()));
-            advertisementRepository.save(advertisement);
-            return;
+        if (!currentUser.isCanPublish()) {
+            throw new PermissionDeniedException("You cant publish");
         }
-        throw new PermissionDeniedException("You cant publish");
+        var advertisement = new Advertisement();
+        advertisement.setText(advertisementDto.text());
+        advertisement.setTitle(advertisementDto.title());
+        advertisement.setAuthor(currentUser);
+        advertisement.setType(typeService.getTypeById(advertisementDto.typeId()));
+        advertisementRepository.save(advertisement);
     }
 
     @Override
     public void deleteAdvertisementById(Long advertisementId) {
         var currentUser = userService.getCurrentUser();
-        if (currentUser.isAdmin()) {
-            advertisementRepository.deleteById(advertisementId);
-            return;
-        }
-
         var advertisement = getById(advertisementId);
-        if (currentUser.isAuthorOf(advertisement)) {
-            advertisementRepository.deleteById(advertisementId);
-            return;
+        if (!canDeleteAdvertisement(currentUser, advertisement)) {
+            throw new PermissionDeniedException("Cannot delete advertisement with id " + advertisementId);
         }
-        throw new PermissionDeniedException("Cannot delete advertisement with id " + advertisementId);
+        advertisementRepository.deleteById(advertisementId);
+    }
+
+    private boolean canDeleteAdvertisement(User user, Advertisement advertisement) {
+        return user.isAdmin() || user.isAuthorOf(advertisement);
     }
 
     @Override
     public void changeAdvertisement(Long advertisementId, AdvertisementDto advertisementDto) {
-
+        // TODO
     }
 
 }
